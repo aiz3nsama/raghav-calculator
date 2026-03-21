@@ -3,46 +3,74 @@
 <head>
   <title>Raghav Chains Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <style>
     body {
       font-family: Arial;
-      background: #1e1e1e;
+      background: #121212;
       color: white;
-      text-align: center;
-      padding: 20px;
+      padding: 15px;
     }
 
-    h1 { color: #f5c542; }
+    h1 {
+      text-align: center;
+      color: #f5c542;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
 
     input {
-      width: 90%;
-      padding: 10px;
+      width: 100%;
+      padding: 12px;
       margin: 8px 0;
       border: none;
-      border-radius: 5px;
-      background: #333;
+      border-radius: 8px;
+      background: #2b2b2b;
       color: white;
+      font-size: 14px;
     }
 
     button {
+      width: 100%;
+      padding: 14px;
       background: #f5c542;
-      color: black;
-      padding: 12px;
       border: none;
-      border-radius: 5px;
-      width: 95%;
+      border-radius: 10px;
       font-size: 16px;
+      font-weight: bold;
       margin-top: 10px;
     }
 
-    .box {
-      background: #2b2b2b;
+    .result {
+      background: #1e1e1e;
       padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      text-align: left;
+      border-radius: 12px;
       white-space: pre-line;
+      margin-top: 15px;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .green {
+      background: #0f3d2e;
+      color: #00ffae;
+    }
+
+    .red {
+      background: #3d0f0f;
+      color: #ff4d4d;
     }
   </style>
 </head>
@@ -51,15 +79,19 @@
 
 <h1>Raghav Chains Calculator</h1>
 
-<input id="silver" placeholder="Available Silver (grams)">
-<input id="target" placeholder="Required Final Weight (grams)">
-<input id="purity" placeholder="Purity (%)">
-<input id="copper" placeholder="Copper %">
-<input id="zinc" placeholder="Zinc %">
+<div class="card">
+  <input id="silver" placeholder="Available Silver (grams)">
+  <input id="target" placeholder="Required Final Weight (grams)">
+  <input id="purity" placeholder="Purity (%)">
+  <input id="copper" placeholder="Copper %">
+  <input id="zinc" placeholder="Zinc %">
 
-<button onclick="calculate()">Calculate</button>
+  <button onclick="calculate()">Calculate</button>
+</div>
 
-<div class="box" id="result"></div>
+<div id="statusBox"></div>
+
+<div class="result" id="result"></div>
 
 <script>
 function calculate() {
@@ -75,12 +107,11 @@ function calculate() {
   }
 
   let purityDecimal = purity / 100;
-
-  // Required silver for target
   let requiredSilver = target * purityDecimal;
 
   let total, other, remainingSilver = 0, extraSilverNeeded = 0;
   let silverUsed;
+  let statusHTML = "";
 
   // CASE 1: Enough silver
   if (silver >= requiredSilver) {
@@ -88,28 +119,25 @@ function calculate() {
     other = total - requiredSilver;
     remainingSilver = silver - requiredSilver;
     silverUsed = requiredSilver;
+
+    statusHTML = `<div class="status green">✔ Enough Silver Available</div>`;
   }
-  // CASE 2: Not enough silver
+  // CASE 2: Less silver
   else {
     total = silver / purityDecimal;
     other = total - silver;
     extraSilverNeeded = requiredSilver - silver;
     silverUsed = silver;
+
+    statusHTML = `<div class="status red">✖ Not Enough Silver</div>`;
   }
 
   let copper = (copperP / 100) * other;
   let zinc = (zincP / 100) * other;
 
-  // Batch logic
-  let preferred, maxBatch;
-
-  if (purity > 70) {
-    preferred = 2000;
-    maxBatch = 2200;
-  } else {
-    preferred = 3000;
-    maxBatch = 3200;
-  }
+  // Batch logic (balanced)
+  let preferred = purity > 70 ? 2000 : 3000;
+  let maxBatch = purity > 70 ? 2200 : 3200;
 
   let batches = Math.ceil(total / preferred);
   let batchSize = total / batches;
@@ -152,6 +180,7 @@ function calculate() {
   }
 
   document.getElementById("result").innerText = output;
+  document.getElementById("statusBox").innerHTML = statusHTML;
 }
 </script>
 
