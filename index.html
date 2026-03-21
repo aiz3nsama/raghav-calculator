@@ -3,67 +3,46 @@
 <head>
   <title>Raghav Chains Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont;
-      background: #121212;
-      color: #e5e5e5;
-      margin: 0;
+      font-family: Arial;
+      background: #1e1e1e;
+      color: white;
+      text-align: center;
       padding: 20px;
     }
 
-    h1 {
-      text-align: center;
-      color: #c0c0c0;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: #1e1e1e;
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.05);
-    }
+    h1 { color: #f5c542; }
 
     input {
-      width: 100%;
-      padding: 12px;
+      width: 90%;
+      padding: 10px;
       margin: 8px 0;
-      border-radius: 8px;
       border: none;
-      background: #2a2a2a;
-      color: #fff;
-      font-size: 14px;
-    }
-
-    input::placeholder {
-      color: #aaa;
+      border-radius: 5px;
+      background: #333;
+      color: white;
     }
 
     button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(145deg, #d9d9d9, #a6a6a6);
+      background: #f5c542;
       color: black;
-      font-weight: bold;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      width: 95%;
       font-size: 16px;
       margin-top: 10px;
     }
 
-    .result {
+    .box {
+      background: #2b2b2b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: left;
       white-space: pre-line;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .section-title {
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 5px;
     }
   </style>
 </head>
@@ -72,20 +51,15 @@
 
 <h1>Raghav Chains Calculator</h1>
 
-<div class="card">
-  <div class="section-title">INPUT</div>
-  <input id="silver" placeholder="Available Silver (grams)">
-  <input id="target" placeholder="Required Final Weight (grams)">
-  <input id="purity" placeholder="Purity (%)">
-  <input id="copper" placeholder="Copper %">
-  <input id="zinc" placeholder="Zinc %">
+<input id="silver" placeholder="Available Silver (grams)">
+<input id="target" placeholder="Required Final Weight (grams)">
+<input id="purity" placeholder="Purity (%)">
+<input id="copper" placeholder="Copper %">
+<input id="zinc" placeholder="Zinc %">
 
-  <button onclick="calculate()">Calculate</button>
-</div>
+<button onclick="calculate()">Calculate</button>
 
-<div class="card result" id="result">
-Results will appear here...
-</div>
+<div class="box" id="result"></div>
 
 <script>
 function calculate() {
@@ -101,16 +75,22 @@ function calculate() {
   }
 
   let purityDecimal = purity / 100;
+
+  // Required silver for target
   let requiredSilver = target * purityDecimal;
 
-  let total, other, remainingSilver = 0, extraSilverNeeded = 0, silverUsed;
+  let total, other, remainingSilver = 0, extraSilverNeeded = 0;
+  let silverUsed;
 
+  // CASE 1: Enough silver
   if (silver >= requiredSilver) {
     total = target;
     other = total - requiredSilver;
     remainingSilver = silver - requiredSilver;
     silverUsed = requiredSilver;
-  } else {
+  }
+  // CASE 2: Not enough silver
+  else {
     total = silver / purityDecimal;
     other = total - silver;
     extraSilverNeeded = requiredSilver - silver;
@@ -120,6 +100,7 @@ function calculate() {
   let copper = (copperP / 100) * other;
   let zinc = (zincP / 100) * other;
 
+  // Batch logic
   let preferred, maxBatch;
 
   if (purity > 70) {
@@ -140,22 +121,22 @@ function calculate() {
 
   let output = "";
 
-  output += `TOTAL WEIGHT: ${total.toFixed(2)} g\n`;
-  output += `SILVER USED: ${silverUsed.toFixed(2)} g\n`;
-  output += `OTHER METAL: ${other.toFixed(2)} g\n\n`;
+  output += `Total Weight: ${total.toFixed(2)} g\n`;
+  output += `Silver Used: ${silverUsed.toFixed(2)} g\n`;
+  output += `Other Metal: ${other.toFixed(2)} g\n\n`;
 
-  output += `COPPER: ${copper.toFixed(2)} g | ZINC: ${zinc.toFixed(2)} g\n\n`;
+  output += `Copper: ${copper.toFixed(2)} g | Zinc: ${zinc.toFixed(2)} g\n\n`;
 
   if (remainingSilver > 0) {
-    output += `REMAINING SILVER: ${remainingSilver.toFixed(2)} g\n\n`;
+    output += `Remaining Silver: ${remainingSilver.toFixed(2)} g\n\n`;
   }
 
   if (extraSilverNeeded > 0) {
-    output += `EXTRA SILVER NEEDED: ${extraSilverNeeded.toFixed(2)} g\n\n`;
+    output += `Extra Silver Needed: ${extraSilverNeeded.toFixed(2)} g\n\n`;
   }
 
-  output += `TOTAL BATCHES: ${batches}\n`;
-  output += `BATCH SIZE ≈ ${Math.round(batchSize)} g\n\n`;
+  output += `Total Batches: ${batches}\n`;
+  output += `Batch Size ≈ ${batchSize.toFixed(0)} g\n\n`;
 
   for (let i = 1; i <= batches; i++) {
     let bSilver = batchSize * purityDecimal;
@@ -164,7 +145,7 @@ function calculate() {
     let bCopper = (copperP / 100) * bOther;
     let bZinc = (zincP / 100) * bOther;
 
-    output += `Batch ${i} (${Math.round(batchSize)}g)\n`;
+    output += `Batch ${i} (${Math.round(batchSize)}g):\n`;
     output += `  Silver: ${bSilver.toFixed(2)} g\n`;
     output += `  Copper: ${bCopper.toFixed(2)} g\n`;
     output += `  Zinc: ${bZinc.toFixed(2)} g\n\n`;
@@ -176,4 +157,3 @@ function calculate() {
 
 </body>
 </html>
-
