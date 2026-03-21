@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Raghav Chains Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    body {
+      font-family: Arial;
+      background: #1e1e1e;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 { color: #f5c542; }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+      background: #333;
+      color: white;
+    }
+
+    button {
+      background: #f5c542;
+      color: black;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      width: 95%;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .box {
+      background: #2b2b2b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: left;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Raghav Chains Calculator</h1>
+
+<input id="silver" placeholder="Available Silver (grams)">
+<input id="target" placeholder="Required Final Weight (grams)">
+<input id="purity" placeholder="Purity (%)">
+<input id="copper" placeholder="Copper %">
+<input id="zinc" placeholder="Zinc %">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="box" id="result"></div>
+
+<script>
+function calculate() {
+  let silver = parseFloat(document.getElementById("silver").value);
+  let target = parseFloat(document.getElementById("target").value);
+  let purity = parseFloat(document.getElementById("purity").value);
+  let copperP = parseFloat(document.getElementById("copper").value);
+  let zincP = parseFloat(document.getElementById("zinc").value);
+
+  if (copperP + zincP !== 100) {
+    alert("Copper + Zinc must equal 100%");
+    return;
+  }
+
+  let purityDecimal = purity / 100;
+
+  // Required silver for target
+  let requiredSilver = target * purityDecimal;
+
+  let total, other, remainingSilver = 0, extraSilverNeeded = 0;
+  let silverUsed;
+
+  // CASE 1: Enough silver
+  if (silver >= requiredSilver) {
+    total = target;
+    other = total - requiredSilver;
+    remainingSilver = silver - requiredSilver;
+    silverUsed = requiredSilver;
+  }
+  // CASE 2: Not enough silver
+  else {
+    total = silver / purityDecimal;
+    other = total - silver;
+    extraSilverNeeded = requiredSilver - silver;
+    silverUsed = silver;
+  }
+
+  let copper = (copperP / 100) * other;
+  let zinc = (zincP / 100) * other;
+
+  // Batch logic
+  let preferred, maxBatch;
+
+  if (purity > 70) {
+    preferred = 2000;
+    maxBatch = 2200;
+  } else {
+    preferred = 3000;
+    maxBatch = 3200;
+  }
+
+  let batches = Math.ceil(total / preferred);
+  let batchSize = total / batches;
+
+  if (batchSize > maxBatch) {
+    batches++;
+    batchSize = total / batches;
+  }
+
+  let output = "";
+
+  output += `Total Weight: ${total.toFixed(2)} g\n`;
+  output += `Silver Used: ${silverUsed.toFixed(2)} g\n`;
+  output += `Other Metal: ${other.toFixed(2)} g\n\n`;
+
+  output += `Copper: ${copper.toFixed(2)} g | Zinc: ${zinc.toFixed(2)} g\n\n`;
+
+  if (remainingSilver > 0) {
+    output += `Remaining Silver: ${remainingSilver.toFixed(2)} g\n\n`;
+  }
+
+  if (extraSilverNeeded > 0) {
+    output += `Extra Silver Needed: ${extraSilverNeeded.toFixed(2)} g\n\n`;
+  }
+
+  output += `Total Batches: ${batches}\n`;
+  output += `Batch Size ≈ ${batchSize.toFixed(0)} g\n\n`;
+
+  for (let i = 1; i <= batches; i++) {
+    let bSilver = batchSize * purityDecimal;
+    let bOther = batchSize - bSilver;
+
+    let bCopper = (copperP / 100) * bOther;
+    let bZinc = (zincP / 100) * bOther;
+
+    output += `Batch ${i} (${Math.round(batchSize)}g):\n`;
+    output += `  Silver: ${bSilver.toFixed(2)} g\n`;
+    output += `  Copper: ${bCopper.toFixed(2)} g\n`;
+    output += `  Zinc: ${bZinc.toFixed(2)} g\n\n`;
+  }
+
+  document.getElementById("result").innerText = output;
+}
+</script>
+
+</body>
+</html>
