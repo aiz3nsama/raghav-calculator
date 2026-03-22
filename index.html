@@ -79,18 +79,7 @@
     background: #3d0f0f; /* dark red bg */
     color: #ff4d4d;      /* bright red text */
 }
-    .flex-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
 
-.flex-row .result-card {
-    flex: 1 1 140px;
-    max-width: 160px;
-    text-align: center;
-}
 
   </style>
 </head>
@@ -204,18 +193,27 @@ if(copperP + zincP !== 100) {
   let resultHTML = "";
 
 // Main stats
-// Wrap first 6 boxes in a flex container
-resultHTML += `<div class="flex-row">`;
+resultHTML += `
+<div class="result-card">
+  <div class="result-title">Total Weight</div>
+  <div class="result-value">${total.toFixed(2)} g</div>
+</div>
 
-// First 6 result cards
-resultHTML += `<div class="result-card">Total Weight<br><span>${total.toFixed(2)} g</span></div>`;
-resultHTML += `<div class="result-card">Silver Used<br><span>${silverUsed.toFixed(2)} g</span></div>`;
-resultHTML += `<div class="result-card">Other Metal<br><span>${other.toFixed(2)} g</span></div>`;
-resultHTML += `<div class="result-card">Copper / Zinc<br><span>${copper.toFixed(2)} g / ${zinc.toFixed(2)} g</span></div>`;
-resultHTML += `<div class="result-card ${remainingSilver>0?'green':''}">Remaining Silver<br><span>${remainingSilver.toFixed(2)} g</span></div>`;
-resultHTML += `<div class="result-card ${extraSilverNeeded>0?'red':''}">Extra Silver Needed<br><span>${extraSilverNeeded.toFixed(2)} g</span></div>`;
+<div class="result-card">
+  <div class="result-title">Silver Used</div>
+  <div class="result-value">${silverUsed.toFixed(2)} g</div>
+</div>
 
-resultHTML += `</div>`; // close flex container
+<div class="result-card">
+  <div class="result-title">Other Metal</div>
+  <div class="result-value">${other.toFixed(2)} g</div>
+</div>
+
+<div class="result-card">
+  <div class="result-title">Copper / Zinc</div>
+  <div class="result-value">${copper.toFixed(2)} g / ${zinc.toFixed(2)} g</div>
+</div>
+`;
 
 
 // Extra info
