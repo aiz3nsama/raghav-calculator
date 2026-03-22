@@ -79,6 +79,23 @@
     background: #3d0f0f; /* dark red bg */
     color: #ff4d4d;      /* bright red text */
 }
+    .batch-row {
+    display: flex;
+    justify-content: space-between; /* left label, right amount */
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.batch-row span:first-child {
+    font-weight: 500;
+    color: #ccc; /* label color */
+}
+
+.batch-row span:last-child {
+    font-weight: 600;
+    color: #e6e6e6; /* amount color */
+}
+
 .batch-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -260,16 +277,20 @@ for (let i = 1; i <= batches; i++) {
 
     resultHTML += `
     <div class="result-card">
-        <div class="result-title">Batch ${i}</div>
-        <div class="result-value">
-            Silver: ${bSilver.toFixed(1)} g<br>
-            Copper: ${bCopper.toFixed(1)} g<br>
-            Zinc: ${bZinc.toFixed(1)} g
+        <div class="batch-row">
+            <span>Silver:</span> <span>${bSilver.toFixed(1)} g</span>
+        </div>
+        <div class="batch-row">
+            <span>Copper:</span> <span>${bCopper.toFixed(1)} g</span>
+        </div>
+        <div class="batch-row">
+            <span>Zinc:</span> <span>${bZinc.toFixed(1)} g</span>
         </div>
     </div>`;
 }
 
 resultHTML += `</div>`; // close batch-grid
+
 
 
 // Show result
