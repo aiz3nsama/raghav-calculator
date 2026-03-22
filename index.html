@@ -195,34 +195,24 @@ if(copperP + zincP !== 100) {
   let zinc = (zincP / 100) * other;
 
   // Batch logic
-let minBatch, maxBatch;
-if (purityPercent >= 70) {
-    minBatch = 1950;
-    maxBatch = 2250;
-} else {
-    minBatch = 1950;
+let preferred, maxBatch;
+
+  if (purity > 70) {
+    preferred = 2000;
+    maxBatch = 2200;
+  } else {
+    preferred = 3000;
     maxBatch = 3200;
-}
+  }
 
-// 2. Generate batches (minimize count)
-let batches = [];
-let remainingWeight = total;
+  let batches = Math.ceil(total / preferred);
+  let batchSize = total / batches;
 
-while (remainingWeight > 0) {
-    let batchSize;
-
-    if (remainingWeight > maxBatch) {
-        batchSize = maxBatch;
-    } else if (remainingWeight < minBatch) {
-        batchSize = remainingWeight;
-    } else {
-        batchSize = remainingWeight;
-    }
-
-    batches.push(batchSize);
-    remainingWeight -= batchSize;
-}
-
+  if (batchSize > maxBatch) {
+    batches++;
+    batchSize = total / batches;
+  }
+  let resultHTML = "";
 // Main stats
 resultHTML += `
 <div class="result-card">
@@ -266,9 +256,9 @@ if (extraSilverNeeded > 0) {
 
 
 // Batch info
-let resultHTML = `<div class="batch-grid">`; // grid container
+resultHTML += `<div class="batch-grid">`;
 
-batches.forEach((batchSize, i) => {
+for (let i = 1; i <= batches; i++) {
     let bSilver = batchSize * purityDecimal;
     let bOther = batchSize - bSilver;
     let bCopper = (copperP / 100) * bOther;
@@ -276,15 +266,19 @@ batches.forEach((batchSize, i) => {
 
     resultHTML += `
     <div class="result-card">
-        <div class="batch-row"><span>Batch ${i+1}</span><span>${batchSize.toFixed(1)} g</span></div>
-        <div class="batch-row"><span>Silver:</span><span>${bSilver.toFixed(1)} g</span></div>
-        <div class="batch-row"><span>Copper:</span><span>${bCopper.toFixed(1)} g</span></div>
-        <div class="batch-row"><span>Zinc:</span><span>${bZinc.toFixed(1)} g</span></div>
+        <div class="batch-row">
+            <span>Silver:</span> <span>${bSilver.toFixed(1)} g</span>
+        </div>
+        <div class="batch-row">
+            <span>Copper:</span> <span>${bCopper.toFixed(1)} g</span>
+        </div>
+        <div class="batch-row">
+            <span>Zinc:</span> <span>${bZinc.toFixed(1)} g</span>
+        </div>
     </div>`;
-});
+}
 
-resultHTML += `</div>`; // close grid container
-
+resultHTML += `</div>`; // close batch-grid
 
 
 // Show result
