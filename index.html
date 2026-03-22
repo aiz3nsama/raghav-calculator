@@ -2,131 +2,42 @@
 <html>
 <head>
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#121212">
-
+  <meta name="theme-color" content="#121212">
   <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="theme-color" content="#121212">
-
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <title>Raghav Chains Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <style>
-    body {
-      font-family: Arial;
-      background: #121212;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-
-    h1 {
-  color: #c0c0c0; /* silver */
-}
-
-
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 5px;
-      background: #333;
-      color: white;
-    }
-
-    button {
-      background: linear-gradient(145deg, #d9d9d9, #a6a6a6);
-      color: black;
-      padding: 12px;
-      border: none;
-      border-radius: 5px;
-      width: 95%;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .box {
-  margin-top: 20px;
-}
-.result-card {
-  background: #1f1f1f;
-  padding: 14px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-.result-title {
-  font-size: 13px;
-  color: #aaa;
-}
-.result-value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #e0e0e0;
-}
-
-    .green {
-    background: #0f3d2e; /* dark green bg */
-    color: #00ffae;       /* bright green text */
-}
-
-.red {
-    background: #3d0f0f; /* dark red bg */
-    color: #ff4d4d;      /* bright red text */
-}
-    .batch-row {
-    display: flex;
-    justify-content: space-between; /* left label, right amount */
-    margin-bottom: 4px;
-    font-size: 14px;
-}
-
-.batch-row span:first-child {
-    font-weight: 500;
-    color: #ccc; /* label color */
-}
-
-.batch-row span:last-child {
-    font-weight: 600;
-    color: #e6e6e6; /* amount color */
-}
-
-.batch-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px; /* space between boxes */
-    margin-top: 15px;
-}
-
-
+    body { font-family: Arial; background: #121212; color: white; text-align: center; padding: 20px; }
+    h1 { color: #c0c0c0; }
+    input { width: 90%; padding: 10px; margin: 8px 0; border: none; border-radius: 5px; background: #333; color: white; }
+    button { background: linear-gradient(145deg, #d9d9d9, #a6a6a6); color: black; padding: 12px; border: none; border-radius: 5px; width: 95%; font-size: 16px; margin-top: 10px; }
+    .box { margin-top: 20px; }
+    .result-card { background: #1f1f1f; padding: 14px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .result-title { font-size: 13px; color: #aaa; }
+    .result-value { font-size: 18px; font-weight: bold; color: #e0e0e0; }
+    .green { background: #0f3d2e; color: #00ffae; }
+    .red { background: #3d0f0f; color: #ff4d4d; }
+    .batch-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 14px; }
+    .batch-row span:first-child { font-weight: 500; color: #ccc; }
+    .batch-row span:last-child { font-weight: 600; color: #e6e6e6; }
+    .batch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 15px; }
   </style>
 </head>
 
 <body>
-
-<h1 style="
-  text-align:center;
-  font-size:22px;
-  letter-spacing:2px;
-  color:#e6e6e6;
-  margin-bottom:20px;
-">
+<h1 style="text-align:center; font-size:22px; letter-spacing:2px; color:#e6e6e6; margin-bottom:20px">
   RAGHAV CHAINS CALCULATOR
 </h1>
-
-
 
 <input id="silver" placeholder="Available Silver (grams)">
 <input id="target" placeholder="Required Final Weight (grams)">
 <input id="purity" placeholder="Purity (%)">
 <input id="copper" placeholder="Copper % (default auto)">
 <input id="zinc" placeholder="Zinc % (default auto)">
-
 <button onclick="calculate()">Calculate</button>
 
 <div class="box" id="result"></div>
@@ -137,155 +48,86 @@ function calculate() {
   let target = parseFloat(document.getElementById("target").value);
   let purity = parseFloat(document.getElementById("purity").value);
   let copperInput = document.getElementById("copper").value;
-let zincInput = document.getElementById("zinc").value;
+  let zincInput = document.getElementById("zinc").value;
 
-let copperP, zincP;
+  let copperP, zincP;
+  if(copperInput === "" && zincInput === "") { copperP = 90; zincP = 10; }
+  else if(copperInput === "") { zincP = parseFloat(zincInput); copperP = 100 - zincP; }
+  else if(zincInput === "") { copperP = parseFloat(copperInput); zincP = 100 - copperP; }
+  else { copperP = parseFloat(copperInput); zincP = parseFloat(zincInput); }
 
-if(copperInput === "" && zincInput === "") {
-    // Both empty → default 90/10
-    copperP = 90;
-    zincP = 10;
-} else if(copperInput === "") {
-    // Copper empty → take remainder from zinc
-    zincP = parseFloat(zincInput);
-    copperP = 100 - zincP;
-} else if(zincInput === "") {
-    // Zinc empty → take remainder from copper
-    copperP = parseFloat(copperInput);
-    zincP = 100 - copperP;
-} else {
-    // Both filled
-    copperP = parseFloat(copperInput);
-    zincP = parseFloat(zincInput);
-}
-
-// Validation: ensure sum = 100
-if(copperP + zincP !== 100) {
-    alert("Copper + Zinc must equal 100%");
-    return;
-}
+  if(copperP + zincP !== 100) { alert("Copper + Zinc must equal 100%"); return; }
 
   let purityDecimal = purity / 100;
-
-  // Required silver for target
   let requiredSilver = target * purityDecimal;
 
   let total, other, remainingSilver = 0, extraSilverNeeded = 0;
   let silverUsed;
-  let statusHTML = "";
 
-  // CASE 1: Enough silver
   if (silver >= requiredSilver) {
     total = target;
     other = total - requiredSilver;
     remainingSilver = silver - requiredSilver;
     silverUsed = requiredSilver;
-    statusHTML = `<div class="status green">✔ Enough Silver Available</div>`;
-  }
-  // CASE 2: Not enough silver
-  else {
+  } else {
     total = silver / purityDecimal;
     other = total - silver;
     extraSilverNeeded = requiredSilver - silver;
     silverUsed = silver;
-     statusHTML = `<div class="status red">✖ Not Enough Silver</div>`;
   }
 
   let copper = (copperP / 100) * other;
   let zinc = (zincP / 100) * other;
 
   // Batch logic
-let preferred, maxBatch;
+  let minBatch, maxBatch;
+  if(purity > 70) { minBatch = 2000; maxBatch = 2200; }
+  else { minBatch = 2500; maxBatch = 3200; } // changed for purity ≤ 70
 
-  if (purity > 70) {
-    preferred = 2000;
-    maxBatch = 2200;
-  } else {
-    preferred = 3000;
-    maxBatch = 3200;
-  }
-
-  let batches = Math.ceil(total / preferred);
+  let batches = Math.floor(total / maxBatch);
+  if(total / batches > maxBatch) batches++;
+  if(total / batches < minBatch) batches++;
+  
   let batchSize = total / batches;
 
-  if (batchSize > maxBatch) {
+  while(batchSize > maxBatch) {
     batches++;
     batchSize = total / batches;
   }
-  let resultHTML = "";
-// Main stats
-resultHTML += `
-<div class="result-card">
-  <div class="result-title">Total Weight</div>
-  <div class="result-value">${total.toFixed(2)} g</div>
-</div>
 
-<div class="result-card">
-  <div class="result-title">Silver Used</div>
-  <div class="result-value">${silverUsed.toFixed(2)} g</div>
-</div>
+  // Show results
+  let resultHTML = `
+  <div class="result-card"><div class="result-title">Total Weight</div><div class="result-value">${total.toFixed(2)} g</div></div>
+  <div class="result-card"><div class="result-title">Silver Used</div><div class="result-value">${silverUsed.toFixed(2)} g</div></div>
+  <div class="result-card"><div class="result-title">Other Metal</div><div class="result-value">${other.toFixed(2)} g</div></div>
+  <div class="result-card"><div class="result-title">Copper / Zinc</div><div class="result-value">${copper.toFixed(2)} g / ${zinc.toFixed(2)} g</div></div>
+  `;
 
-<div class="result-card">
-  <div class="result-title">Other Metal</div>
-  <div class="result-value">${other.toFixed(2)} g</div>
-</div>
+  if(remainingSilver > 0) resultHTML += `<div class="result-card green"><div class="result-title">Remaining Silver</div><div class="result-value">${remainingSilver.toFixed(2)} g</div></div>`;
+  if(extraSilverNeeded > 0) resultHTML += `<div class="result-card red"><div class="result-title">Extra Silver Needed</div><div class="result-value">${extraSilverNeeded.toFixed(2)} g</div></div>`;
 
-<div class="result-card">
-  <div class="result-title">Copper / Zinc</div>
-  <div class="result-value">${copper.toFixed(2)} g / ${zinc.toFixed(2)} g</div>
-</div>
-`;
+  // Fused batch info
+  resultHTML += `<div class="result-card"><div class="result-title">Batches / Batch Weight</div><div class="result-value">${batches} batches / ${batchSize.toFixed(2)} g</div></div>`;
 
-
-// Extra info
-if (remainingSilver > 0) {
-    resultHTML += `
-    <div class="result-card green">
-        <div class="result-title">Remaining Silver</div>
-        <div class="result-value">${remainingSilver.toFixed(2)} g</div>
-    </div>`;
-}
-
-if (extraSilverNeeded > 0) {
-    resultHTML += `
-    <div class="result-card red">
-        <div class="result-title">Extra Silver Needed</div>
-        <div class="result-value">${extraSilverNeeded.toFixed(2)} g</div>
-    </div>`;
-}
-
-
-// Batch info
-resultHTML += `<div class="batch-grid">`;
-
-for (let i = 1; i <= batches; i++) {
+  // Batch breakdown grid
+  resultHTML += `<div class="batch-grid">`;
+  for(let i=1; i<=batches; i++){
     let bSilver = batchSize * purityDecimal;
     let bOther = batchSize - bSilver;
-    let bCopper = (copperP / 100) * bOther;
-    let bZinc = (zincP / 100) * bOther;
+    let bCopper = (copperP/100)*bOther;
+    let bZinc = (zincP/100)*bOther;
 
     resultHTML += `
-    <div class="result-card">
-        <div class="batch-row">
-            <span>Silver:</span> <span>${bSilver.toFixed(1)} g</span>
-        </div>
-        <div class="batch-row">
-            <span>Copper:</span> <span>${bCopper.toFixed(1)} g</span>
-        </div>
-        <div class="batch-row">
-            <span>Zinc:</span> <span>${bZinc.toFixed(1)} g</span>
-        </div>
-    </div>`;
-}
+      <div class="result-card">
+        <div class="batch-row"><span>Silver:</span> <span>${bSilver.toFixed(1)} g</span></div>
+        <div class="batch-row"><span>Copper:</span> <span>${bCopper.toFixed(1)} g</span></div>
+        <div class="batch-row"><span>Zinc:</span> <span>${bZinc.toFixed(1)} g</span></div>
+      </div>`;
+  }
+  resultHTML += `</div>`;
 
-resultHTML += `</div>`; // close batch-grid
-
-
-// Show result
-document.getElementById("result").innerHTML = resultHTML;
-
+  document.getElementById("result").innerHTML = resultHTML;
 }
 </script>
-
 </body>
 </html>
