@@ -79,6 +79,12 @@
     background: #3d0f0f; /* dark red bg */
     color: #ff4d4d;      /* bright red text */
 }
+.batch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px; /* space between boxes */
+    margin-top: 15px;
+}
 
 
   </style>
@@ -243,23 +249,28 @@ resultHTML += `
 `;
 
 // Batch breakdown
+// Open grid container for batch boxes
+resultHTML += `<div class="batch-grid">`;
+
 for (let i = 1; i <= batches; i++) {
-  let bSilver = batchSize * purityDecimal;
-  let bOther = batchSize - bSilver;
+    let bSilver = batchSize * purityDecimal;
+    let bOther = batchSize - bSilver;
+    let bCopper = (copperP / 100) * bOther;
+    let bZinc = (zincP / 100) * bOther;
 
-  let bCopper = (copperP / 100) * bOther;
-  let bZinc = (zincP / 100) * bOther;
-
-  resultHTML += `
-  <div class="result-card">
-    <div class="result-title">Batch ${i}</div>
-    <div class="result-value">
-      Silver: ${bSilver.toFixed(1)}g<br>
-      Copper: ${bCopper.toFixed(1)}g<br>
-      Zinc: ${bZinc.toFixed(1)}g
-    </div>
-  </div>`;
+    resultHTML += `
+    <div class="result-card">
+        <div class="result-title">Batch ${i}</div>
+        <div class="result-value">
+            Silver: ${bSilver.toFixed(1)} g<br>
+            Copper: ${bCopper.toFixed(1)} g<br>
+            Zinc: ${bZinc.toFixed(1)} g
+        </div>
+    </div>`;
 }
+
+resultHTML += `</div>`; // close batch-grid
+
 
 // Show result
 document.getElementById("result").innerHTML = resultHTML;
