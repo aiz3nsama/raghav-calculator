@@ -44,13 +44,25 @@
     }
 
     .box {
-      background: #2b2b2b;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      text-align: left;
-      white-space: pre-line;
-    }
+  margin-top: 20px;
+}
+.result-card {
+  background: #1f1f1f;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.result-title {
+  font-size: 13px;
+  color: #aaa;
+}
+.result-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
     .green {
       background: #0f3d2e;
       color: #00ffae;
@@ -138,39 +150,78 @@ function calculate() {
     batchSize = total / batches;
   }
 
-  let output = "";
+  let resultHTML = "";
 
-  output += `Total Weight: ${total.toFixed(2)} g\n`;
-  output += `Silver Used: ${silverUsed.toFixed(2)} g\n`;
-  output += `Other Metal: ${other.toFixed(2)} g\n\n`;
+// Main stats
+resultHTML += `
+<div class="result-card">
+  <div class="result-title">Total Weight</div>
+  <div class="result-value">${total.toFixed(2)} g</div>
+</div>
 
-  output += `Copper: ${copper.toFixed(2)} g | Zinc: ${zinc.toFixed(2)} g\n\n`;
+<div class="result-card">
+  <div class="result-title">Silver Used</div>
+  <div class="result-value">${silverUsed.toFixed(2)} g</div>
+</div>
 
-  if (remainingSilver > 0) {
-    output += `Remaining Silver: ${remainingSilver.toFixed(2)} g\n\n`;
-  }
+<div class="result-card">
+  <div class="result-title">Other Metal</div>
+  <div class="result-value">${other.toFixed(2)} g</div>
+</div>
 
-  if (extraSilverNeeded > 0) {
-    output += `Extra Silver Needed: ${extraSilverNeeded.toFixed(2)} g\n\n`;
-  }
+<div class="result-card">
+  <div class="result-title">Copper / Zinc</div>
+  <div class="result-value">${copper.toFixed(2)} g / ${zinc.toFixed(2)} g</div>
+</div>
+`;
 
-  output += `Total Batches: ${batches}\n`;
-  output += `Batch Size ≈ ${batchSize.toFixed(0)} g\n\n`;
+// Extra info
+if (remainingSilver > 0) {
+  resultHTML += `
+  <div class="result-card">
+    <div class="result-title">Remaining Silver</div>
+    <div class="result-value">${remainingSilver.toFixed(2)} g</div>
+  </div>`;
+}
 
-  for (let i = 1; i <= batches; i++) {
-    let bSilver = batchSize * purityDecimal;
-    let bOther = batchSize - bSilver;
+if (extraSilverNeeded > 0) {
+  resultHTML += `
+  <div class="result-card">
+    <div class="result-title">Extra Silver Needed</div>
+    <div class="result-value">${extraSilverNeeded.toFixed(2)} g</div>
+  </div>`;
+}
 
-    let bCopper = (copperP / 100) * bOther;
-    let bZinc = (zincP / 100) * bOther;
+// Batch info
+resultHTML += `
+<div class="result-card">
+  <div class="result-title">Batches</div>
+  <div class="result-value">${batches} (≈ ${batchSize.toFixed(0)} g each)</div>
+</div>
+`;
 
-    output += `Batch ${i} (${Math.round(batchSize)}g):\n`;
-    output += `  Silver: ${bSilver.toFixed(2)} g\n`;
-    output += `  Copper: ${bCopper.toFixed(2)} g\n`;
-    output += `  Zinc: ${bZinc.toFixed(2)} g\n\n`;
-  }
+// Batch breakdown
+for (let i = 1; i <= batches; i++) {
+  let bSilver = batchSize * purityDecimal;
+  let bOther = batchSize - bSilver;
 
-  document.getElementById("result").innerText = output;
+  let bCopper = (copperP / 100) * bOther;
+  let bZinc = (zincP / 100) * bOther;
+
+  resultHTML += `
+  <div class="result-card">
+    <div class="result-title">Batch ${i}</div>
+    <div class="result-value">
+      Silver: ${bSilver.toFixed(1)}g<br>
+      Copper: ${bCopper.toFixed(1)}g<br>
+      Zinc: ${bZinc.toFixed(1)}g
+    </div>
+  </div>`;
+}
+
+// Show result
+document.getElementById("result").innerHTML = resultHTML;
+
 }
 </script>
 
