@@ -195,10 +195,8 @@ if(copperP + zincP !== 100) {
   let zinc = (zincP / 100) * other;
 
   // Batch logic
- let minBatch, maxBatch;
-
-// Set batch limits based on purity
-if(purity > 70) {
+let minBatch, maxBatch;
+if (purityPercent >= 70) {
     minBatch = 1950;
     maxBatch = 2250;
 } else {
@@ -206,26 +204,24 @@ if(purity > 70) {
     maxBatch = 3200;
 }
 
+// 2. Generate batches (minimize count)
 let batches = [];
-let remainingWeight = total; // total alloy weight
+let remainingWeight = total;
 
-// Generate batches minimizing count
-while(remainingWeight > 0) {
+while (remainingWeight > 0) {
     let batchSize;
 
-    if(remainingWeight > maxBatch) {
+    if (remainingWeight > maxBatch) {
         batchSize = maxBatch;
-    } else if(remainingWeight < minBatch) {
-        batchSize = remainingWeight; // last batch smaller than min
+    } else if (remainingWeight < minBatch) {
+        batchSize = remainingWeight;
     } else {
-        batchSize = remainingWeight; // fits within range
+        batchSize = remainingWeight;
     }
 
     batches.push(batchSize);
     remainingWeight -= batchSize;
 }
-
-let resultHTML = ""; // keep this for generating HTML next
 
 // Main stats
 resultHTML += `
@@ -270,16 +266,7 @@ if (extraSilverNeeded > 0) {
 
 
 // Batch info
-resultHTML += `
-<div class="result-card">
-  <div class="result-title">Batches</div>
-  <div class="result-value">${batches} (≈ ${batchSize.toFixed(0)} g each)</div>
-</div>
-`;
-
-// Batch breakdown
-// Open grid container for batch boxes
-resultHTML += `<div class="batch-grid">`; // open grid container
+let resultHTML = `<div class="batch-grid">`; // grid container
 
 batches.forEach((batchSize, i) => {
     let bSilver = batchSize * purityDecimal;
@@ -297,10 +284,6 @@ batches.forEach((batchSize, i) => {
 });
 
 resultHTML += `</div>`; // close grid container
-
-}
-
-resultHTML += `</div>`; // close batch-grid
 
 
 
