@@ -71,14 +71,14 @@
 }
 
     .green {
-      background: #0f3d2e;
-      color: #00ffae;
-    }
+    background: #0f3d2e; /* dark green bg */
+    color: #00ffae;       /* bright green text */
+}
 
-    .red {
-      background: #3d0f0f;
-      color: #ff4d4d;
-    }
+.red {
+    background: #3d0f0f; /* dark red bg */
+    color: #ff4d4d;      /* bright red text */
+}
   </style>
 </head>
 
@@ -99,8 +99,8 @@
 <input id="silver" placeholder="Available Silver (grams)">
 <input id="target" placeholder="Required Final Weight (grams)">
 <input id="purity" placeholder="Purity (%)">
-<input id="copper" placeholder="Copper %">
-<input id="zinc" placeholder="Zinc %">
+<input id="copper" placeholder="Copper % (default auto)">
+<input id="zinc" placeholder="Zinc % (default auto)">
 
 <button onclick="calculate()">Calculate</button>
 
@@ -111,13 +111,34 @@ function calculate() {
   let silver = parseFloat(document.getElementById("silver").value);
   let target = parseFloat(document.getElementById("target").value);
   let purity = parseFloat(document.getElementById("purity").value);
-  let copperP = parseFloat(document.getElementById("copper").value);
-  let zincP = parseFloat(document.getElementById("zinc").value);
+  let copperInput = document.getElementById("copper").value;
+let zincInput = document.getElementById("zinc").value;
 
-  if (copperP + zincP !== 100) {
+let copperP, zincP;
+
+if(copperInput === "" && zincInput === "") {
+    // Both empty → default 90/10
+    copperP = 90;
+    zincP = 10;
+} else if(copperInput === "") {
+    // Copper empty → take remainder from zinc
+    zincP = parseFloat(zincInput);
+    copperP = 100 - zincP;
+} else if(zincInput === "") {
+    // Zinc empty → take remainder from copper
+    copperP = parseFloat(copperInput);
+    zincP = 100 - copperP;
+} else {
+    // Both filled
+    copperP = parseFloat(copperInput);
+    zincP = parseFloat(zincInput);
+}
+
+// Validation: ensure sum = 100
+if(copperP + zincP !== 100) {
     alert("Copper + Zinc must equal 100%");
     return;
-  }
+}
 
   let purityDecimal = purity / 100;
 
@@ -194,20 +215,21 @@ resultHTML += `
 
 // Extra info
 if (remainingSilver > 0) {
-  resultHTML += `
-  <div class="result-card">
-    <div class="result-title">Remaining Silver</div>
-    <div class="result-value">${remainingSilver.toFixed(2)} g</div>
-  </div>`;
+    resultHTML += `
+    <div class="result-card green">
+        <div class="result-title">Remaining Silver</div>
+        <div class="result-value">${remainingSilver.toFixed(2)} g</div>
+    </div>`;
 }
 
 if (extraSilverNeeded > 0) {
-  resultHTML += `
-  <div class="result-card">
-    <div class="result-title">Extra Silver Needed</div>
-    <div class="result-value">${extraSilverNeeded.toFixed(2)} g</div>
-  </div>`;
+    resultHTML += `
+    <div class="result-card red">
+        <div class="result-title">Extra Silver Needed</div>
+        <div class="result-value">${extraSilverNeeded.toFixed(2)} g</div>
+    </div>`;
 }
+
 
 // Batch info
 resultHTML += `
