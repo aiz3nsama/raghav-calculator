@@ -35,7 +35,7 @@
 
 <input id="silver" placeholder="Available Silver (grams)">
 <input id="target" placeholder="Required Final Weight (grams)">
-<input id="purity" placeholder="Purity (%)">
+<input id="purity" placeholder="Purity (%) or 925 / 9340 format">
 <input id="copper" placeholder="Copper % (default auto)">
 <input id="zinc" placeholder="Zinc % (default auto)">
 <button onclick="calculate()">Calculate</button>
@@ -46,7 +46,19 @@
 function calculate() {
   let silver = parseFloat(document.getElementById("silver").value);
   let target = parseFloat(document.getElementById("target").value);
-  let purity = parseFloat(document.getElementById("purity").value);
+
+  // ✅ Purity normalization
+  let purityInput = parseFloat(document.getElementById("purity").value);
+  let purity;
+
+  if (purityInput <= 100) {
+    purity = purityInput;
+  } else if (purityInput < 1000) {
+    purity = purityInput / 10;
+  } else {
+    purity = purityInput / 100;
+  }
+
   let copperInput = document.getElementById("copper").value;
   let zincInput = document.getElementById("zinc").value;
 
@@ -79,23 +91,36 @@ function calculate() {
   let copper = (copperP / 100) * other;
   let zinc = (zincP / 100) * other;
 
-  // Batch logic
+  // ✅ Batch logic FIXED
   let minBatch, maxBatch;
-  if(purity > 70) { minBatch = 2000; maxBatch = 2200; }
-  else { minBatch = 2500; maxBatch = 3200; } // changed for purity ≤ 70
-
-  let batches = Math.floor(total / maxBatch);
-  if(total / batches > maxBatch) batches++;
-  if(total / batches < minBatch) batches++;
-  
-  let batchSize = total / batches;
-
-  while(batchSize > maxBatch) {
-    batches++;
-    batchSize = total / batches;
+  if(purity > 70) { 
+    minBatch = 2000; 
+    maxBatch = 2200; 
+  } else { 
+    minBatch = 2500; 
+    maxBatch = 3200; 
   }
 
-  // Show results
+  let batches, batchSize, leftover = 0;
+
+  if (total < 2 * minBatch) {
+    batches = 1;
+    batchSize = Math.min(total, maxBatch);
+    leftover = total - batchSize;
+  } else {
+    batches = Math.floor(total / maxBatch);
+    if(total / batches > maxBatch) batches++;
+    if(total / batches < minBatch) batches++;
+    
+    batchSize = total / batches;
+
+    while(batchSize > maxBatch) {
+      batches++;
+      batchSize = total / batches;
+    }
+  }
+
+  // ✅ Results
   let resultHTML = `
   <div class="result-card"><div class="result-title">Total Weight</div><div class="result-value">${total.toFixed(2)} g</div></div>
   <div class="result-card"><div class="result-title">Silver Used</div><div class="result-value">${silverUsed.toFixed(2)} g</div></div>
@@ -106,10 +131,17 @@ function calculate() {
   if(remainingSilver > 0) resultHTML += `<div class="result-card green"><div class="result-title">Remaining Silver</div><div class="result-value">${remainingSilver.toFixed(2)} g</div></div>`;
   if(extraSilverNeeded > 0) resultHTML += `<div class="result-card red"><div class="result-title">Extra Silver Needed</div><div class="result-value">${extraSilverNeeded.toFixed(2)} g</div></div>`;
 
-  // Fused batch info
   resultHTML += `<div class="result-card"><div class="result-title">Batches / Batch Weight</div><div class="result-value">${batches} batches / ${batchSize.toFixed(2)} g</div></div>`;
 
-  // Batch breakdown grid
+  if(leftover > 0){
+    resultHTML += `
+    <div class="result-card red">
+      <div class="result-title">Remaining Unbatched Weight</div>
+      <div class="result-value">${leftover.toFixed(2)} g</div>
+    </div>`;
+  }
+
+  // Batch breakdown
   resultHTML += `<div class="batch-grid">`;
   for(let i=1; i<=batches; i++){
     let bSilver = batchSize * purityDecimal;
