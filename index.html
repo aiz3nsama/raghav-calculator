@@ -91,7 +91,7 @@ function calculate() {
   let copper = (copperP / 100) * other;
   let zinc = (zincP / 100) * other;
 
-  // ✅ Batch logic FIXED
+  // ✅ FINAL BATCH LOGIC
   let minBatch, maxBatch;
   if(purity > 70) { 
     minBatch = 2000; 
@@ -103,11 +103,17 @@ function calculate() {
 
   let batches, batchSize, leftover = 0;
 
-  if (total < 2 * minBatch) {
+  if (total <= maxBatch) {
     batches = 1;
-    batchSize = Math.min(total, maxBatch);
-    leftover = total - batchSize;
-  } else {
+    batchSize = total;
+    leftover = 0;
+  }
+  else if (total < 2 * minBatch) {
+    batches = 1;
+    batchSize = maxBatch;
+    leftover = total - maxBatch;
+  }
+  else {
     batches = Math.floor(total / maxBatch);
     if(total / batches > maxBatch) batches++;
     if(total / batches < minBatch) batches++;
