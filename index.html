@@ -103,7 +103,13 @@ function calculate() {
 
   let batches, batchSize, leftover = 0;
 
-  if (total <= maxBatch) {
+  // 🔥 NEW RULE: 2000–3200 always single batch
+  if (total >= 2000 && total <= 3200) {
+    batches = 1;
+    batchSize = total;
+    leftover = 0;
+  }
+  else if (total <= maxBatch) {
     batches = 1;
     batchSize = total;
     leftover = 0;
